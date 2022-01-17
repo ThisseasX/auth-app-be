@@ -1,3 +1,4 @@
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
@@ -26,9 +27,15 @@ passport
     }),
   );
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
+
 const app = express();
 
 app
+  .use(cors(corsOptions))
   .use(cookieParser(SECRET))
   .use(bodyParser.json())
   .use(passport.initialize())
