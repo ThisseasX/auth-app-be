@@ -1,0 +1,25 @@
+{
+  "name": "auth-app-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -r esm src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "cookie-parser": "^1.4.6",
+    "esm": "^3.2.25",
+    "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.15",
+    "passport": "^0.5.2",
+    "passport-cookie": "^1.0.9",
+    "passport-jwt-cookiecombo": "^1.0.5",
+    "passport-local": "^1.0.0"
+  }
+}
