@@ -56,7 +56,7 @@ app
     // Set the cookie
     res.cookie('authToken', token, {
       httpOnly: true, // only visible to the server (not document.cookie)
-      sameSite: true,
+      sameSite: 'None',
       signed: true,
       secure: true,
     });
