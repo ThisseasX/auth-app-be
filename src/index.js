@@ -7,7 +7,9 @@ import passport from 'passport';
 import JwtCookieComboStrategy from 'passport-jwt-cookiecombo';
 import { Strategy as LocalStrategy } from 'passport-local';
 
-const SECRET = 's0m3s3cr3t';
+const SECRET = process.env.SECRET || 's0m3s3cr3t';
+const PORT = process.env.PORT || 4000;
+const ORIGIN = process.env.ORIGIN || 'http://localhost:3000';
 
 passport
   .use(
@@ -23,12 +25,18 @@ passport
   )
   .use(
     new LocalStrategy((username, password, done) => {
-      done(null, { username, password });
+      if (username === 'a' && password === 'a') {
+        // simulate user not found
+        done(null, false);
+      } else {
+        // simulate user found
+        done(null, { username, password });
+      }
     }),
   );
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: ORIGIN,
   credentials: true,
 };
 
@@ -53,29 +61,28 @@ app
       secure: true,
     });
 
-    res.json({ token });
+    res.json({ user });
   })
-  .get(
-    '/logout',
-    passport.authenticate('jwt-cookiecombo', { session: false }),
-    (req, res) => {
-      console.log(req.logout()); // clears req.user
-      res.clearCookie('authToken'); // clears the cookie
-      res.send('logged out');
-    },
-  )
-  .get(
-    '/',
-    passport.authenticate('jwt-cookiecombo', { session: false }),
-    (req, res) => {
-      res.cookie('unsigned-cookie', '123');
+  // Authenticate all further routes
+  .use(passport.authenticate('jwt-cookiecombo', { session: false }))
+  .post('/verifyToken', (req, res) => {
+    const { authToken } = req.signedCookies;
+    const user = jwt.verify(authToken, SECRET);
+    res.json(user);
+  })
+  .get('/logout', (req, res) => {
+    req.logout(); // clears req.user
+    res.clearCookie('authToken'); // clears the cookie
+    res.send('logged out');
+  })
+  .get('/', (req, res) => {
+    res.cookie('unsigned-cookie', '123');
 
-      console.log(req.cookies);
-      console.log(req.signedCookies);
-      console.log(req.user);
-      console.log(req.isAuthenticated());
+    console.log(req.cookies);
+    console.log(req.signedCookies);
+    console.log(req.user);
+    console.log(req.isAuthenticated());
 
-      res.send('hello');
-    },
-  )
-  .listen(4000);
+    res.send('hello');
+  })
+  .listen(PORT);
