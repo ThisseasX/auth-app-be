@@ -71,8 +71,17 @@ app
     res.json(user);
   })
   .get('/logout', (req, res) => {
-    req.logout(); // clears req.user
-    res.clearCookie('authToken'); // clears the cookie
+    // clears req.user
+    req.logout();
+
+    // clears the cookie
+    res.clearCookie('authToken', {
+      httpOnly: true,
+      sameSite: 'None',
+      signed: true,
+      secure: true,
+    });
+
     res.send('logged out');
   })
   .get('/', (req, res) => {
